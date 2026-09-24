@@ -46,7 +46,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PageTodo(
+fun ScreenTodo(
     viewModel: TodoViewModel
 ) {
     val todoList by viewModel.todoList.observeAsState(emptyList())
@@ -295,7 +295,7 @@ fun TodoItem(
 
 @Preview(showBackground = false)
 @Composable
-fun PageTodoPreview() {
+fun ScreenTodoPreview() {
     TodoAppTheme() {
         TodoItem(
             todo = Todo(

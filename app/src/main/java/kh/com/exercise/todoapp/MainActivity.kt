@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
-import kh.com.exercise.todoapp.todo.PageTodo
+import kh.com.exercise.todoapp.todo.ScreenTodo
 import kh.com.exercise.todoapp.todo.TodoViewModel
 import kh.com.exercise.todoapp.ui.theme.TodoAppTheme
 
@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
                             .padding(innerPadding),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        PageTodo(viewModel)
+                        ScreenTodo(viewModel)
                     }
                 }
             }
