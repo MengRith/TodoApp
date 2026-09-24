@@ -1,5 +1,6 @@
 package kh.com.exercise.todoapp.todo
 
+import android.R.attr.description
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -21,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -32,10 +35,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kh.com.exercise.todoapp.R
+import kh.com.exercise.todoapp.ui.theme.TodoAppTheme
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,6 +51,7 @@ fun PageTodo(
 ) {
     val todoList by viewModel.todoList.observeAsState(emptyList())
     var inputText by remember { mutableStateOf("") }
+    var editingTodo by remember { mutableStateOf<Todo?>(null) }
 
     Scaffold(
         topBar = {
@@ -152,6 +159,9 @@ fun PageTodo(
                             todo = item,
                             onDelete = {
                                 viewModel.deleteTodo(item.id)
+                            },
+                            onEdit = {
+                                editingTodo = item
                             }
                         )
                     }
@@ -159,12 +169,70 @@ fun PageTodo(
             }
         }
     }
+    editingTodo?.let { todo ->
+        EditTodoDialog(
+            todo = todo,
+            onDismiss = { editingTodo = null },
+            onConfirm = { newTitle, newDescription ->
+                viewModel.editTodo(todo.id, newTitle, newDescription)
+                editingTodo = null
+            }
+        )
+    }
+}
+
+@Composable
+fun EditTodoDialog(
+    todo: Todo,
+    onDismiss: () -> Unit,
+    onConfirm: (String, String) -> Unit)
+{
+    var title by remember { mutableStateOf(todo.title) }
+    var description by remember { mutableStateOf(todo.description) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edit Todo") },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            )
+                {
+                 OutlinedTextField(
+                     value = title,
+                     onValueChange = { title = it },
+                     label = { Text("Title") },
+                     singleLine = true
+                 )
+                    OutlinedTextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text("Description") },
+                        singleLine = true
+                    )
+                }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (title.isNotBlank()){
+
+                    onConfirm(title, description)
+                    }
+                }
+            ) {
+                Text("Save")
+                }
+        }
+    )
+
 }
 
 @Composable
 fun TodoItem(
     todo: Todo,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onEdit: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -205,6 +273,15 @@ fun TodoItem(
                     )
                 }
             }
+            IconButton(onClick = onEdit) {
+
+                Icon(
+                    painter = painterResource(R.drawable.ic_edit),
+                    contentDescription = "Edit",
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+
             IconButton(onClick = onDelete) {
                 Icon(
                     painter = painterResource(R.drawable.ic_delete),
@@ -213,5 +290,22 @@ fun TodoItem(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = false)
+@Composable
+fun PageTodoPreview() {
+    TodoAppTheme() {
+        TodoItem(
+            todo = Todo(
+                id = 1,
+                title = "Go to school",
+                description = "Learn database",
+                date = Date()
+            ),
+            onDelete = {},
+            onEdit = {}
+        )
     }
 }

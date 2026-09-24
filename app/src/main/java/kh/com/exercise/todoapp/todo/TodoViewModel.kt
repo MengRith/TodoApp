@@ -23,6 +23,20 @@ class TodoViewModel : ViewModel() {
         getAllTodo()
     }
 
+    fun editTodo(
+        id: Int,
+        title: String,
+        description: String
+    ){
+        TodoRepository.editTodo(
+            id,
+            title,
+            description
+        )
+        getAllTodo()
+    }
+
+
     fun deleteTodo(
         id: Int
     ){

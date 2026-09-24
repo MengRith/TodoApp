@@ -29,6 +29,22 @@ object TodoRepository {
         )
     }
 
+    fun editTodo(
+        id: Int,
+        title: String,
+        description: String = ""
+    ) {
+        val index = todoList.indexOfFirst { it.id == id }
+        if (index == -1) {
+            todoList[index] = todoList[index].copy(
+                title = title,
+                description = description,
+            )
+        }
+
+    }
+
+
     fun deleteTodo(
         id: Int
     ) {
